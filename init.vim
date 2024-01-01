@@ -7,21 +7,12 @@
 set nocompatible
 filetype off
 
-set rtp+=$HOME/.vim/bundle/Vundle.vim
-call vundle#rc()
-"call vundle#being()
-	" required, manage Vundle
-	Plugin 'VundleVim/Vundle.vim'
-	
-	" my bundle list
-	Plugin 'frazrepo/vim-rainbow'
-call vundle#end()
-
 call plug#begin()
 	" colorscheme plugin
 	Plug 'themercorp/themer.lua'
 	Plug 'scrooloose/nerdtree' |
 		\ Plug 'Xuyuanp/nerdtree-git-plugin'
+	Plug 'sheerun/vim-polyglot'
 
 call plug#end()
 
@@ -114,7 +105,8 @@ nnoremap <F6> :execute complier_run_oper<CR>
 nnoremap <F10> :execute terminal_with_sp<CR>
 nnoremap <F12> :!code %<CR>
 
-tnoremap <Esc> <C-\><C-n>:q!<CR>
+tnoremap <Esc> <C-\><C-n>
+"tnoremap <Esc> <C-\><C-n>:q!<CR>
 "
 "
 " configure vimrc
