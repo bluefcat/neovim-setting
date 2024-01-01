@@ -13,6 +13,7 @@ call plug#begin()
 	Plug 'scrooloose/nerdtree' |
 		\ Plug 'Xuyuanp/nerdtree-git-plugin'
 	Plug 'sheerun/vim-polyglot'
+	Plug 'windwp/nvim-autopairs'
 
 call plug#end()
 
@@ -143,14 +144,16 @@ set nobackup
 "
 
 lua << EOF
-	require("themer").setup({
-		colorscheme = "rose_pine",
-		styles = {
-			["function"] = { style = 'italic' },
-			functionbuiltin = { style = 'italic' },
-			variable = { style = 'italic' },
-			variableBuiltIn = { style = 'italic' },
-			parameter  = { style = 'italic' },
-	  	},
-	})
+require("nvim-autopairs").setup {}
+
+require("themer").setup({
+	colorscheme = "rose_pine",
+	styles = {
+		["function"] = { style = 'italic' },
+		functionbuiltin = { style = 'italic' },
+		variable = { style = 'italic' },
+		variableBuiltIn = { style = 'italic' },
+		parameter  = { style = 'italic' },
+	},
+})
 EOF
