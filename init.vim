@@ -14,6 +14,10 @@ call plug#begin()
 		\ Plug 'Xuyuanp/nerdtree-git-plugin'
 	Plug 'sheerun/vim-polyglot'
 	Plug 'windwp/nvim-autopairs'
+	Plug 'vim-airline/vim-airline'	
+	Plug 'vim-airline/vim-airline-themes'
+	Plug 'neoclide/coc.nvim', {'branch': 'release'}
+	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 call plug#end()
 
@@ -144,10 +148,10 @@ set nobackup
 "
 
 lua << EOF
-require("nvim-autopairs").setup {}
+require("nvim-autopairs").setup({})
 
 require("themer").setup({
-	colorscheme = "rose_pine",
+	colorscheme = "rose_pine_moon",
 	styles = {
 		["function"] = { style = 'italic' },
 		functionbuiltin = { style = 'italic' },
