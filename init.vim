@@ -16,7 +16,13 @@ call plug#begin()
 	Plug 'windwp/nvim-autopairs'
 	Plug 'vim-airline/vim-airline'	
 	Plug 'vim-airline/vim-airline-themes'
-	Plug 'neoclide/coc.nvim', {'branch': 'release'}
+	
+	" CocInstall <LSP server>
+	" python coc-pyright, 
+	" Cmake coc-cmake
+	" C, Cpp sudo apt install clangd-12 and coc-clangd
+	Plug 'neoclide/coc.nvim', {'branch': 'release'} 
+	"TSInstall <language-name>
 	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 call plug#end()
