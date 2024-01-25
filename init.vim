@@ -5,7 +5,7 @@
 "
 
 set nocompatible
-filetype off
+
 
 call plug#begin()
 	" colorscheme plugin
@@ -20,7 +20,7 @@ call plug#begin()
 	" CocInstall <LSP server>
 	" python coc-pyright, 
 	" Cmake coc-cmake
-	" C, Cpp sudo apt install clangd-12 and coc-clangd
+	" C, Cpp sudo apt-get install clangd-12 and coc-clangd
 	Plug 'neoclide/coc.nvim', {'branch': 'release'} 
 	"TSInstall <language-name>
 	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -72,6 +72,8 @@ nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
 " Start NERDTree and leave the cursor in it.
+auto VimEnter * execute "set splitbelow"
+auto VimEnter * execute "10sp +term"
 auto VimEnter * NERDTree
 
 " Close the tab if NERDTree is the only window remaining in it.
@@ -103,8 +105,10 @@ let extension = expand('%:e')
 let complier_oper = Compiler(extension)
 let complier_run_oper = Compiler(extension) . ' && ./a.out'
 
-let terminal_with_sp = "10sp | terminal"
 
+let g:airline_theme = "atomic"
+let g:airline#extensions#tabline#enabled = "1"
+let g:airline_powerline_fonts = "1"
 "
 "
 " mapping key
