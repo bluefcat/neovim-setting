@@ -3,9 +3,8 @@
 " bundle
 "
 "
-
 set nocompatible
-
+set splitbelow
 
 call plug#begin()
 	" colorscheme plugin
@@ -72,13 +71,11 @@ nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
 " Start NERDTree and leave the cursor in it.
-auto VimEnter * execute "set splitbelow"
 auto VimEnter * execute "10sp +term"
 auto VimEnter * NERDTree
 
 " Close the tab if NERDTree is the only window remaining in it.
 auto BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-
 "
 "
 " configure function 
