@@ -23,7 +23,10 @@ call plug#begin()
 	Plug 'neoclide/coc.nvim', {'branch': 'release'} 
 	"TSInstall <language-name>
 	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
+	"Python envornment
+	Plug 'AckslD/swenv.nvim' |
+		\ Plug 'nvim-lua/plenary.nvim'
+	
 call plug#end()
 
 filetype plugin indent on
@@ -167,4 +170,17 @@ require("themer").setup({
 		parameter  = { style = 'italic' },
 	},
 })
+
+require("swenv").setup({
+	-- Should return a list of tables with a `name` and a `path` entry each.
+	-- Gets the argument `venvs_path` set below.
+	-- By default just lists the entries in `venvs_path`.
+	get_venvs = function(venvs_path)
+		return require('swenv.api').get_venvs(venvs_path)
+	end,
+	-- Path passed to `get_venvs`.
+	venvs_path = vim.fn.expand('~/venvs'),
+	post_set_venv = nil,
+})
+
 EOF
