@@ -1,5 +1,4 @@
 "
-"
 " bundle
 "
 "
@@ -55,26 +54,9 @@ filetype plugin indent on
 "
 "
 
-" rainbow braket
-let g:rainbow_active = 1
-let g:rainbow_load_separately = [
-    \ [ '*' , [['(', ')'], ['\[', '\]'], ['{', '}']] ],
-    \ [ '*.tex' , [['(', ')'], ['\[', '\]']] ],
-    \ [ '*.cpp' , [['(', ')'], ['\[', '\]'], ['{', '}']] ],
-    \ [ '*.{html,htm}' , [['(', ')'], ['\[', '\]'], ['{', '}'], ['<\a[^>]*>', '</[^>]*>']] ],
-    \ ]
 
-"let g:rainbow_guifgs = ['RoyalBlue3', 'DarkOrange3', 'DarkOrchid3', 'FireBrick']
-"let g:rainbow_ctermfgs = ['lightblue', 'lightgreen', 'yellow', 'red', 'magenta']
-
-" NERDTree setting
-nnoremap <leader>n :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
 
 " Start NERDTree and leave the cursor in it.
-auto VimEnter * execute "10sp +term"
 auto VimEnter * NERDTree
 
 " Close the tab if NERDTree is the only window remaining in it.
@@ -129,6 +111,9 @@ nnoremap <F5> :execute complier_oper<CR>
 nnoremap <F6> :execute complier_run_oper<CR>
 nnoremap <F10> :execute terminal_with_sp<CR>
 nnoremap <F12> :!code %<CR>
+nnoremap <C-A> ggVG<CR>
+
+vnoremap <Bs> d<CR>
 
 tnoremap <Esc> <C-\><C-n>
 "tnoremap <Esc> <C-\><C-n>:q!<CR>
@@ -161,9 +146,7 @@ set fileencodings=utf-8,euc-kr
 set bs=indent,eol,start
 set nobackup
 
-"
-"
-" colorsheme with themer
+let has_term = 0
 "
 "
 
@@ -193,4 +176,36 @@ require("swenv").setup({
 	post_set_venv = nil,
 })
 
+function _G.check_back_space()
+	local col = vim.fn.col('.') - 1
+	return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s')~= nil
+end
+
+local keyset = vim.keymap.set
+local nkeyset = vim.api.nvim_set_keymap
+local opts = {silent=true, noremap=true, expr=true, replace_keycodes=false}
+local nopts = {silent=true, noremap=true}
+
+-- custom key
+
+keyset(
+	"i",
+	"<TAB>",
+	'coc#pum#visible()?coc#pum#next(1) :v:lua.check_back_space() ? "<TAB>" : coc#refresh()',
+	opts
+)
+
+keyset(
+	"i",
+	"<S-TAB>",
+	[[coc#pum#visible()?coc#pum#prev(1) : "\<C-h>"]],
+	opts
+)
+
+nkeyset("n", "<leader>n", [[:NERDTreeFocus<CR>]], nopts)
+nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
+nkeyset("n", "<C-t>", [[:NERDTreeToggle<CR>]], nopts)
+nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
+
 EOF
+
