@@ -123,8 +123,6 @@ tnoremap <Esc> <C-\><C-n>
 "
 "
 
-set number
-
 if has("syntax")
 	syntax on
 endif
@@ -151,6 +149,8 @@ let has_term = 0
 "
 
 lua << EOF
+vim.opt.nu = true
+vim.opt.relativenumber = true
 require("nvim-autopairs").setup({})
 
 require("themer").setup({
@@ -206,6 +206,59 @@ nkeyset("n", "<leader>n", [[:NERDTreeFocus<CR>]], nopts)
 nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
 nkeyset("n", "<C-t>", [[:NERDTreeToggle<CR>]], nopts)
 nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
+
+local function findTerminal()
+    local buffIds = vim.api.nvim_list_bufs()
+    for i, x in pairs(buffIds) do
+        if string.find(vim.api.nvim_buf_get_name(x), "term") then
+            return x
+        end
+    end
+    return nil
+end
+
+
+local function openTerminallocal()
+    local currentDir = vim.fn.expand('%:p:h')
+    -- vim.cmd("belowright 10split")
+    vim.cmd("belowright 12split")
+    vim.cmd("wincmd j")
+    local currentTerminal = findTerminal()
+    if currentTerminal ~= nil then
+        -- print("terminal found")
+        vim.cmd("buf " .. currentTerminal)
+        vim.cmd("startinsert")
+    else
+        -- print("no terminal found")
+        vim.cmd("term")
+        vim.cmd("startinsert")
+        vim.api.nvim_input("cd " .. currentDir .. "\n")
+        vim.api.nvim_input("clear\n")
+    end
+end
+
+local function openTerminal()
+    if vim.api.nvim_buf_get_option(0, 'buftype') == 'terminal' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, true, true), 'n', true)
+        return
+    end
+    vim.cmd("belowright 12split")
+	vim.cmd("wincmd j")
+    local currentTerminal = findTerminal()
+    if currentTerminal ~= nil then
+        -- print("terminal found")
+        vim.cmd("buf " .. currentTerminal)
+    else
+        -- print("no terminal found")
+        vim.cmd("term")
+    end
+    vim.cmd("startinsert")
+end
+
+vim.keymap.set('n', '<A-t>', openTerminallocal, {noremap=true, silent=true})
+vim.keymap.set('n', '<A-T>', openTerminal, {noremap=true, silent=true})
+vim.keymap.set('t', '<A-t>', '<C-\\><C-n>:q<CR>') -- quit the terminal window
+vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
 
 EOF
 

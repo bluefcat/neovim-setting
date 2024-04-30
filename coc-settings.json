@@ -1,9 +1,8 @@
 {
-	"languageserver": {
-		"coc-clangd": {
-			"command": "clangd",
-			"rootPatterns": [".git/", "compile_flags.txt", "compile_commands.json"],
-			"filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
-		}
-	}
+	"coc-clangd": {
+		"command": "clangd",
+		"rootPatterns": [".git/", "compile_flags.txt", "compile_commands.json"],
+		"filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+	},
+	"inlayHint.enable": false,
 }
