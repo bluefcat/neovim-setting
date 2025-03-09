@@ -2,8 +2,15 @@
 " bundle
 "
 "
+set mouse=
 set nocompatible
 set splitbelow
+set noerrorbells vb t_vb=
+set belloff=all
+
+if has('autocmd')
+	autocmd GUIEnter * set visualbell t_vb=
+endif
 
 call plug#begin()
 	" colorscheme plugin
@@ -21,7 +28,7 @@ call plug#begin()
 	" C, Cpp sudo apt-get install clangd-12 and coc-clangd
 	Plug 'neoclide/coc.nvim', {'branch': 'release'} 
 	"TSInstall <language-name>
-	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+	"Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 	"Python envornment
 	Plug 'AckslD/swenv.nvim' |
 		\ Plug 'nvim-lua/plenary.nvim'
@@ -127,7 +134,7 @@ if has("syntax")
 	syntax on
 endif
 
-au BufNewFile, BufRead *.cpp set syntax=cpp11
+"au BufNewFile, BufRead *.cpp set syntax=cpp11
 
 set encoding=utf8
 set autoindent
@@ -145,6 +152,13 @@ set bs=indent,eol,start
 set nobackup
 
 let has_term = 0
+
+"fold
+"au BufNewFile, BufRead *.cpp call CocActionAsync('fold')
+
+nnoremap <space> za
+nnoremap zM zM
+nnoremap zR zR
 "
 "
 
@@ -207,11 +221,15 @@ nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
 nkeyset("n", "<C-t>", [[:NERDTreeToggle<CR>]], nopts)
 nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
 
+local function activateFold()
+	vim.cmd("call CocActionAsync('fold')")
+end
+
 local function findTerminal()
     local buffIds = vim.api.nvim_list_bufs()
     for i, x in pairs(buffIds) do
-        if string.find(vim.api.nvim_buf_get_name(x), "term") then
-            return x
+        if string.find(vim.api.nvim_buf_get_name(x), "term") then 
+			return x
         end
     end
     return nil
@@ -236,7 +254,6 @@ local function openTerminallocal()
         vim.api.nvim_input("clear\n")
     end
 end
-
 local function openTerminal()
     if vim.api.nvim_buf_get_option(0, 'buftype') == 'terminal' then
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, true, true), 'n', true)
@@ -254,6 +271,13 @@ local function openTerminal()
     end
     vim.cmd("startinsert")
 end
+
+
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr = "coc#util#foldexpr()"
+-- vim.opt.foldenable = false
+
+vim.keymap.set('n', 'za', activateFold, {noremap=true, silent=true})
 
 vim.keymap.set('n', '<A-t>', openTerminallocal, {noremap=true, silent=true})
 vim.keymap.set('n', '<A-T>', openTerminal, {noremap=true, silent=true})
