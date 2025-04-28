@@ -26,9 +26,9 @@ call plug#begin()
 	" python coc-pyright, 
 	" Cmake coc-cmake
 	" C, Cpp sudo apt-get install clangd-12 and coc-clangd
-	Plug 'neoclide/coc.nvim', {'branch': 'release'} 
+	" Plug 'neoclide/coc.nvim', {'branch': 'release'} 
 	"TSInstall <language-name>
-	"Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 	"Python envornment
 	Plug 'AckslD/swenv.nvim' |
 		\ Plug 'nvim-lua/plenary.nvim'
@@ -74,26 +74,6 @@ auto BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree'
 "
 "
 
-function Compiler(ext)
-	if a:ext == 'c'
-		return "!gcc % -o ./a.out -lm"
-	endif
-
-	if a:ext == 'cpp'
-		return "!g++ % -o ./a.out -pthread -lm"
-	endif
-
-	if a:ext == 'py'
-		return "!python3 %"
-	endif
-
-	return '0'
-endfunction
-
-let extension = expand('%:e')
-let complier_oper = Compiler(extension)
-let complier_run_oper = Compiler(extension) . ' && ./a.out'
-
 
 let g:airline_theme = "atomic"
 let g:airline#extensions#tabline#enabled = 1              " vim-airline 버퍼 목록 켜기
@@ -113,10 +93,6 @@ nnoremap <C-x> :bp <BAR> bd #<Enter>
 " mapping key
 "
 "
-
-nnoremap <F5> :execute complier_oper<CR>
-nnoremap <F6> :execute complier_run_oper<CR>
-nnoremap <F10> :execute terminal_with_sp<CR>
 nnoremap <F12> :!code %<CR>
 nnoremap <C-A> ggVG<CR>
 
@@ -150,17 +126,14 @@ set smarttab
 set fileencodings=utf-8,euc-kr
 set bs=indent,eol,start
 set nobackup
+"fold
+set foldmethod=syntax
+set nofoldenable
 
 let has_term = 0
 
-"fold
-"au BufNewFile, BufRead *.cpp call CocActionAsync('fold')
 
 nnoremap <space> za
-nnoremap zM zM
-nnoremap zR zR
-"
-"
 
 lua << EOF
 vim.opt.nu = true
@@ -202,28 +175,25 @@ local nopts = {silent=true, noremap=true}
 
 -- custom key
 
-keyset(
-	"i",
-	"<TAB>",
-	'coc#pum#visible()?coc#pum#next(1) :v:lua.check_back_space() ? "<TAB>" : coc#refresh()',
-	opts
-)
+--keyset(
+--	"i",
+--	"<TAB>",
+--	'coc#pum#visible()?coc#pum#next(1) :v:lua.check_back_space() ? "<TAB>" : coc#refresh()',
+--	opts
+--)
 
-keyset(
-	"i",
-	"<S-TAB>",
-	[[coc#pum#visible()?coc#pum#prev(1) : "\<C-h>"]],
-	opts
-)
+-- keyset(
+--	"i",
+--	"<S-TAB>",
+--	[[coc#pum#visible()?coc#pum#prev(1) : "\<C-h>"]],
+--	opts
+--)
 
 nkeyset("n", "<leader>n", [[:NERDTreeFocus<CR>]], nopts)
 nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
 nkeyset("n", "<C-t>", [[:NERDTreeToggle<CR>]], nopts)
 nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
 
-local function activateFold()
-	vim.cmd("call CocActionAsync('fold')")
-end
 
 local function findTerminal()
     local buffIds = vim.api.nvim_list_bufs()
@@ -272,12 +242,6 @@ local function openTerminal()
     vim.cmd("startinsert")
 end
 
-
--- vim.opt.foldmethod = "expr"
--- vim.opt.foldexpr = "coc#util#foldexpr()"
--- vim.opt.foldenable = false
-
-vim.keymap.set('n', 'za', activateFold, {noremap=true, silent=true})
 
 vim.keymap.set('n', '<A-t>', openTerminallocal, {noremap=true, silent=true})
 vim.keymap.set('n', '<A-T>', openTerminal, {noremap=true, silent=true})
