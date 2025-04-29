@@ -12,6 +12,9 @@ if has('autocmd')
 	autocmd GUIEnter * set visualbell t_vb=
 endif
 
+filetype plugin indent on
+syntax on
+
 call plug#begin()
 	" colorscheme plugin
 	Plug 'themercorp/themer.lua'
@@ -22,13 +25,24 @@ call plug#begin()
 	Plug 'vim-airline/vim-airline'	
 	Plug 'vim-airline/vim-airline-themes'
 	
-	" CocInstall <LSP server>
-	" python coc-pyright, 
-	" Cmake coc-cmake
-	" C, Cpp sudo apt-get install clangd-12 and coc-clangd
-	" Plug 'neoclide/coc.nvim', {'branch': 'release'} 
 	"TSInstall <language-name>
 	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+	Plug 'williamboman/mason.nvim'
+	Plug 'williamboman/mason-lspconfig.nvim'
+	Plug 'neovim/nvim-lspconfig'
+
+	Plug 'hrsh7th/nvim-cmp'
+	Plug 'hrsh7th/cmp-nvim-lsp'
+	Plug 'hrsh7th/cmp-buffer'
+	Plug 'hrsh7th/cmp-path'
+	Plug 'hrsh7th/cmp-cmdline'
+	Plug 'saadparwaiz1/cmp_luasnip'
+	Plug 'L3MON4D3/LuaSnip'
+
+	" Telescope 플러그인 설치
+	Plug 'nvim-telescope/telescope.nvim', {'tag': '0.1.0'}
+	Plug 'nvim-lua/plenary.nvim'    " telescope.nvim의 의존성
+
 	"Python envornment
 	Plug 'AckslD/swenv.nvim' |
 		\ Plug 'nvim-lua/plenary.nvim'
@@ -106,10 +120,6 @@ tnoremap <Esc> <C-\><C-n>
 "
 "
 
-if has("syntax")
-	syntax on
-endif
-
 "au BufNewFile, BufRead *.cpp set syntax=cpp11
 
 set encoding=utf8
@@ -126,19 +136,88 @@ set smarttab
 set fileencodings=utf-8,euc-kr
 set bs=indent,eol,start
 set nobackup
-"fold
-set foldmethod=syntax
-set nofoldenable
-
-let has_term = 0
-
-
-nnoremap <space> za
 
 lua << EOF
 vim.opt.nu = true
 vim.opt.relativenumber = true
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr="nvim_treesitter#foldexpr()"
+-- vim.opt.foldenable = false
+
 require("nvim-autopairs").setup({})
+
+require("nvim-treesitter.configs").setup({
+	ensure_installed={"lua", "c", "cpp", "python", "vim"},
+	highlight = { 
+		enable = true ,
+		additional_vim_regex_highlighting = false,
+	},
+	indent = { enable = true },
+	folding = { enable = true, },
+})
+
+require('mason').setup()
+require('mason-lspconfig').setup({
+	ensure_installed = { "pyright" }
+})
+
+local lspconfig = require('lspconfig')
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+capabilities.textDocument.foldingRange = {
+  dynamicRegistration = false,
+  lineFoldingOnly = true
+}
+
+lspconfig.pyright.setup({
+	capabilities = capabilities,
+	settings = {
+		python = {
+			analysis = {
+				autoSearchPaths = true,
+				useLibraryCodeForTypes = true
+			}
+		}
+	}
+})
+
+lspconfig.clangd.setup({
+	capabilities = capabilities,
+	cmd = {"clangd"}
+})
+
+-- nvim-cmp 설정
+local cmp = require('cmp')
+
+cmp.setup({
+  -- 자동완성 설정
+  snippet = {
+    expand = function(args)
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  mapping = {
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  },
+  sources = {
+    { name = 'nvim_lsp' },      -- LSP 소스
+    { name = 'buffer' },        -- 버퍼 소스
+    { name = 'path' },          -- 경로 소스
+    { name = 'luasnip' },       -- 스니펫
+  },
+})
+
+local telescope = require('telescope.builtin')
+-- 정의로 이동 기능 설정
+vim.keymap.set('n', 'gd', function()
+  telescope.lsp_definitions()
+end)
 
 require("themer").setup({
 	colorscheme = "rose_pine_moon",
@@ -173,26 +252,10 @@ local nkeyset = vim.api.nvim_set_keymap
 local opts = {silent=true, noremap=true, expr=true, replace_keycodes=false}
 local nopts = {silent=true, noremap=true}
 
--- custom key
-
---keyset(
---	"i",
---	"<TAB>",
---	'coc#pum#visible()?coc#pum#next(1) :v:lua.check_back_space() ? "<TAB>" : coc#refresh()',
---	opts
---)
-
--- keyset(
---	"i",
---	"<S-TAB>",
---	[[coc#pum#visible()?coc#pum#prev(1) : "\<C-h>"]],
---	opts
---)
-
 nkeyset("n", "<leader>n", [[:NERDTreeFocus<CR>]], nopts)
-nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
 nkeyset("n", "<C-t>", [[:NERDTreeToggle<CR>]], nopts)
-nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
+-- nkeyset("n", "<C-n>", [[:NERDTree<CR>]], nopts)
+-- nkeyset("n", "<C-f>", [[:NERDTreeFind<CR>]], nopts)
 
 
 local function findTerminal()
@@ -247,6 +310,5 @@ vim.keymap.set('n', '<A-t>', openTerminallocal, {noremap=true, silent=true})
 vim.keymap.set('n', '<A-T>', openTerminal, {noremap=true, silent=true})
 vim.keymap.set('t', '<A-t>', '<C-\\><C-n>:q<CR>') -- quit the terminal window
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
-
 EOF
 
